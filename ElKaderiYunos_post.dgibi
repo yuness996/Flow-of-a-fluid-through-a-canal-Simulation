@@ -1,0 +1,13 @@
+opti rest 'ElKaderiYunos.sv';
+rest;
+
+trac mail3 rv.inco.un;
+list rv.inco;
+
+trac  titr 'un' mail3 (vect 0.1 rv.inco.un);
+trac mail3 rv.inco.un ;
+
+*Comparing the results got by changing Re=0.01,20,100,1000000
+*The velocities at high Renold numbers is much higher than on low RN as expected
+*We can see that through the color bar next to the plot or through the vector representation of the plot which shows very big vectors compared to small Re
+*When changing the Reynold number the colored distribution on the plot changes significantly between low and high Re to indicate a turbulence at high Re

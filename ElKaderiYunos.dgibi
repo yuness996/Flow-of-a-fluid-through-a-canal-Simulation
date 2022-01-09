@@ -1,0 +1,77 @@
+opti dime 2 elem tri6 dens 0.5;
+*choose dimension 2 and a triangle as an element with density 0.3
+p1 = -1. (-5.) ; p2 = 9. (-5.); p3 = 9. 5. ; p4 = -1. 5.;
+*let p1 p2 p3 p4 be the vertices of the rectangle making them symmetric to eachother
+d12 = d p1 p2; d23 = d p2 p3; d34 = d p3 p4; d41 = d p4 p1;
+*d = droi = droite
+*d draws a line between 2 points, here we creat 4 lines
+*trac d12;
+*creat a contour using those lines using et
+cont1 = d12 et d23 et d34 et d41;
+*trac cont1;
+*mail1 = surf cont1;
+*surfaces
+*trac mail1;
+
+p5 = 1. 0. ; p6 = 2. 1.; p7 = 3. 0. ;
+*p5 = 1. 1. ; p6 = 1.5 1.5; p7 = 2. 1. ;
+c2 = CER3 25  p5 p6 p7;
+p8 = 2. (-1.) ;
+*p8 = 1.5 0.5 ;
+c3 = CER3 25  p5 p8 p7;
+*trac cont2;
+cont2 = c2 et c3;
+cont3 = cont1 et cont2;
+*trac cont3;
+mail3 = surf cont3;
+*trac mail3;
+********************************************************************
+
+mail3=chan quaf mail3;
+trac mail3;
+
+*Trace the fluid mesh
+
+m2ns = mode mail3 navier_stokes macro;
+*creat the model
+
+nu = 0.1;
+*viscosity of the fluid
+
+rv=eqex m2ns itma 100
+opti expl zone m2ns oper ns nu inco un
+opti centree zone m2ns oper dfdt 1. un deltat inco un;
+*rv = table de resolution
+list rv;
+*create list of points and objects
+
+rv.pression=eqpr m2ns zone m2ns oper pression;
+*introduce the partial derivatives of pressure
+
+yin = coor 2 d41;
+*uin = 20;
+R = 1.;
+*Radius of the circle
+Re = 1000000;
+*Reynold number
+u0 = (Re * nu)/R;
+*maximum velociy on the wall
+
+Din = 10.;
+*length of the d41
+uin = u0*(1-(4*(yin*yin)/(Din*Din)));
+
+rv = eqex rv clim
+un uimp d41 uin 
+un vimp d41 0.
+*introduce the boundary condition horizontally and vertically where we have the velocity is equal to 0 on the walls
+un uimp (d12 et d34 et cont2) 0.
+un vimp (d12 et d34 et cont2) 0.;
+*horizontal and vertical velocity on the circle boundary is zero
+
+rv.inco.un=kcht m2ns vect sommet (0. 0.);
+exec rv;
+
+opti sauv 'ElKaderiYunos.sv';
+sauv;
+fin;
